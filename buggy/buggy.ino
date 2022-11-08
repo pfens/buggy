@@ -52,14 +52,23 @@ void loop() {
   // Serial.println("x: " + String(x_joy) + " y:" + String(y_joy) + " sw: " + String(sw));
 
   uint16_t dir = FORWARD;
-  uint16_t speed = max(abs(y_joy - 256), 255);
+  uint16_t speed = min(abs(y_joy - 256), 255);
+  uint16_t left = 1.0;
+  uint16_t right = 1.0;
 
   if(y_joy < 256)
     dir = BACKWARD;
-
-  Serial.println(speed);
-  for(uint8_t i = 0; i < 4; i++) {
-    ms[i]->setSpeed(speed);
+  if(x_joy > 256 + 10)
+    left = 0.5;
+  else if(x_joy < 256 - 10)
+    right = 0.5;
+    
+  for(uint8_t i = 0; i < 2; i++) {
+    ms[i]->setSpeed(speed * right);
+    ms[i]->run(dir);
+  }
+  for(uint8_t i = 2; i < 4; i++) {
+    ms[i]->setSpeed(speed * left);
     ms[i]->run(dir);
   }
 }
