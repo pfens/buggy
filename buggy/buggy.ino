@@ -4,6 +4,7 @@
 #include <Adafruit_MotorShield.h>
 
 // Configuration
+uint16_t motor_delay = 50;
 // HC-05
 uint8_t rx_pin = 10;
 uint8_t tx_pin = 11;
@@ -48,15 +49,17 @@ void loop() {
   int16_t x_joy = doc["x"];
   int16_t y_joy = doc["y"];
   bool sw = doc["sw"];
+  // Serial.println("x: " + String(x_joy) + " y:" + String(y_joy) + " sw: " + String(sw));
 
+  uint16_t dir = FORWARD;
+  uint16_t speed = max(abs(y_joy - 256), 255);
+
+  if(y_joy < 256)
+    dir = BACKWARD;
+
+  Serial.println(speed);
   for(uint8_t i = 0; i < 4; i++) {
-    uint8_t dir = FORWARD;
-    ms[i]->setSpeed(abs(y_joy - 256));
-    if(y_joy < 256)
-      dir = BACKWARD;
-      
-    Serial.println("DIR: " + String(dir) + " SPEED: " + String(abs(y_joy - 256)) + " X-Y:" + String(x_joy) + " " + String(y_joy));
-    
+    ms[i]->setSpeed(speed);
     ms[i]->run(dir);
   }
 }
